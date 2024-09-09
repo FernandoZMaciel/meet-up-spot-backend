@@ -13,16 +13,20 @@ import java.util.List;
 @RequestMapping("/coordinates")
 public class CoordinatesController {
     private final CoordinatesService coordinatesService = new CoordinatesService();
+    private static List<City> cities = List.of(new City("Blumenau", -26.9194,  -49.0661),
+            new City("Lapa", -25.7671, -49.7169),
+            new City("Porto Alegre", -30.0346, -51.2177),
+            new City("São Paulo", -23.5505, -46.6333));
+
 
     @GetMapping("/center")
     public double[] getCenter() {
-        List<City> cities = List.of(new City("Blumenau", -26.9194,  -49.0661),
-                new City("São Paulo", -23.5505, -46.6333),
-                new City("Lapa", -25.7671, -49.7169),
-                new City("Porto Alegre", -30.0346, -51.2177));
-
-
         return coordinatesService.getCenter(cities);
+    }
+
+    @GetMapping("/distance")
+    public double getDistance(){
+        return coordinatesService.getDistance(cities.getFirst(), cities.getLast());
     }
 
 }
