@@ -20,8 +20,7 @@ public class RouteController {
 
     @GetMapping("/external-data")
     public ResponseEntity<?> fetchData() {
-        String url = "https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=51.4822656,-0.1933769&destinations=51.4994794,-0.1269979&key=YcUz8JvYZDWUOotIo8a3hfqsuMy9uuxCd2vw2ZZPPj3Leu9GtYgvh8Qa7NByjLGr";
-        Map<String, Object> data = apiService.getDataFromApi(url);
+        Map<String, Object> data = apiService.getDataFromApi();
         return ResponseEntity.ok(data);
     }
 }

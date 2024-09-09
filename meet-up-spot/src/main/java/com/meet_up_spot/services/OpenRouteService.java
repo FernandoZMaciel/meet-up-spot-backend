@@ -13,7 +13,8 @@ public class OpenRouteService {
         this.webClient = webClientBuilder.baseUrl("").build();
     }
 
-    public Map<String, Object> getDataFromApi(String endpoint) {
+    public Map<String, Object> getDataFromApi() {
+        String endpoint = "https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=51.4822656,-0.1933769&destinations=51.4994794,-0.1269979&key=YcUz8JvYZDWUOotIo8a3hfqsuMy9uuxCd2vw2ZZPPj3Leu9GtYgvh8Qa7NByjLGr"
         Mono<Map> response = this.webClient.get()
                 .uri(endpoint)
                 .retrieve()

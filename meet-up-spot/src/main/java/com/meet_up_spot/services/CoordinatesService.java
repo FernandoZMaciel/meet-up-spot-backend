@@ -2,7 +2,7 @@ package com.meet_up_spot.services;
 
 import com.meet_up_spot.domain.City;
 
-import java.util.List;
+import java.util.*;
 
 public class CoordinatesService {
 
@@ -33,9 +33,25 @@ public class CoordinatesService {
         double radOriginCityLong = Math.toRadians(originCity.getLongitude());
         double radDestinationCityLat = Math.toRadians(destinationCity.getLatitude());
         double radDestinationCityLong = Math.toRadians(destinationCity.getLongitude());
-        double distanceLatDelta = Math.sin((radDestinationCityLat - radOriginCityLat)/2);
-        double distanceLongDelta = Math.sin((radDestinationCityLong - radOriginCityLong)/2);
-        double distanceDelta = distanceLatDelta*distanceLatDelta + Math.cos(radOriginCityLat)*Math.cos(radDestinationCityLat)*distanceLongDelta*distanceLongDelta;
-        return 2*EARTH_RADIUS_METERS *Math.asin(Math.sqrt(distanceDelta));
+        double distanceLatDelta = Math.sin((radDestinationCityLat - radOriginCityLat) / 2);
+        double distanceLongDelta = Math.sin((radDestinationCityLong - radOriginCityLong) / 2);
+        double distanceDelta = distanceLatDelta * distanceLatDelta + Math.cos(radOriginCityLat) * Math.cos(radDestinationCityLat) * distanceLongDelta * distanceLongDelta;
+
+        return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(distanceDelta));
+    }
+
+    public List<Map.Entry<City, Double>> getMeetPoint(List<City> cities, City center) {
+        List<Map.Entry<City, Double>> list = new ArrayList<>();
+        for (City city : cities) {
+            list.add(new AbstractMap.SimpleEntry<>(city, this.getDistance(city, center)));
+        }
+        Collections.sort(list, new Comparator<Map.Entry<City, Double>>() {
+            @Override
+            public int compare(Map.Entry<City, Double> o1, Map.Entry<City, Double> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        return list;
     }
 }

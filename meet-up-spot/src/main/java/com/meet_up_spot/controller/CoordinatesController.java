@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/coordinates")
@@ -29,4 +30,12 @@ public class CoordinatesController {
         return coordinatesService.getDistance(cities.getFirst(), cities.getLast());
     }
 
+    @GetMapping("/meetspot")
+
+    public List<Map.Entry<City, Double>> getMeetPoint() {
+        long start = System.currentTimeMillis();
+        double[] coordinates = coordinatesService.getCenter(cities);
+        return coordinatesService.getMeetPoint(cities, new City("Centro", coordinates[0], coordinates[1]))
+                ;
+    }
 }
