@@ -1,13 +1,12 @@
 package com.meet_up_spot.services;
 
 import com.meet_up_spot.domain.City;
-import com.meet_up_spot.domain.DistanceDTO;
+import com.meet_up_spot.domain.TravelDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,14 +23,15 @@ public class OpenRouteService {
     }
 
     @SuppressWarnings("rawtypes")
-    public DistanceDTO getDataFromApi(City origin, City destination) {
+    public TravelDTO getDataFromApi(City origin, City destination) {
         String coordinatesOrigin = origin.getLatitude() + "," + origin.getLongitude();
-        String coordinatesDestination = destination.getLatitude() + "," + origin.getLongitude();
+        String coordinatesDestination = destination.getLatitude() + "," + destination.getLongitude();
         String endpoint = String.format("https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s", coordinatesOrigin, coordinatesDestination, API_KEY);
         Mono<Map> response = this.webClient.get().uri(endpoint).retrieve().bodyToMono(Map.class);
 
 
         String rawString =  response.block().get("rows").toString();
+        log.info(rawString);
         String regex = "value=(\\d+)";
 
         Pattern pattern = Pattern.compile(regex);
@@ -49,6 +49,6 @@ public class OpenRouteService {
             }
             count++;
         }
-        return new DistanceDTO(origin, destination, distance, duration);
+        return new TravelDTO(origin, destination, distance, duration);
     }
 }

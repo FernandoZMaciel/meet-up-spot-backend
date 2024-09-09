@@ -1,12 +1,13 @@
 package com.meet_up_spot.services;
 
 import com.meet_up_spot.domain.City;
+import com.meet_up_spot.domain.TotalTravelDTO;
+import com.meet_up_spot.domain.TravelDTO;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 
 public class CoordinatesService {
-
-    private final double EARTH_RADIUS_METERS = 6371000;
 
     public double[] getCenter(List<City> cities) {
         double coordinatesX = 0;
@@ -37,6 +38,7 @@ public class CoordinatesService {
         double distanceLongDelta = Math.sin((radDestinationCityLong - radOriginCityLong) / 2);
         double distanceDelta = distanceLatDelta * distanceLatDelta + Math.cos(radOriginCityLat) * Math.cos(radDestinationCityLat) * distanceLongDelta * distanceLongDelta;
 
+        double EARTH_RADIUS_METERS = 6371000;
         return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(distanceDelta));
     }
 
@@ -45,13 +47,32 @@ public class CoordinatesService {
         for (City city : cities) {
             list.add(new AbstractMap.SimpleEntry<>(city, this.getDistance(city, center)));
         }
-        Collections.sort(list, new Comparator<Map.Entry<City, Double>>() {
-            @Override
-            public int compare(Map.Entry<City, Double> o1, Map.Entry<City, Double> o2) {
-                return o1.getValue().compareTo(o2.getValue());
-            }
-        });
+        list.sort(Map.Entry.comparingByValue());
 
         return list;
     }
+
+    public List<TravelDTO> getAllDistancesAndDuration(List<Map.Entry<City, Double>> cities){
+        List<TravelDTO> list = new ArrayList<>();
+        OpenRouteService openRouteService = new OpenRouteService(WebClient.builder());
+        City meetSpot = cities.getFirst().getKey();
+        for (Map.Entry<City, Double> city : cities) {
+            if (!meetSpot.equals(city.getKey())) {
+                list.add(openRouteService.getDataFromApi(city.getKey(), meetSpot));
+            }
+        }
+
+        return list;
+    }
+
+    public TotalTravelDTO getTotalDistanceAndDuration(List<TravelDTO> travelDTOList){
+        double totalDistance = 0;
+        double totalDuration = 0;
+        for (TravelDTO travelDTO : travelDTOList) {
+            totalDistance += travelDTO.getDistance();
+            totalDuration += travelDTO.getDuration();
+        }
+        return new TotalTravelDTO(travelDTOList, totalDistance, totalDuration);
+    }
+
 }

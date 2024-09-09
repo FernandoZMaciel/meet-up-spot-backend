@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class DistanceDTO {
+public class TravelDTO {
     private City origin;
     private City destination;
     private double distance;
