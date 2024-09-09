@@ -1,24 +1,54 @@
 package com.meet_up_spot.services;
+
+import com.meet_up_spot.domain.City;
+import com.meet_up_spot.domain.DistanceDTO;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
+@Log4j2
 @Service
 public class OpenRouteService {
     private final WebClient webClient;
+    private final String API_KEY = "YcUz8JvYZDWUOotIo8a3hfqsuMy9uuxCd2vw2ZZPPj3Leu9GtYgvh8Qa7NByjLGr";
 
     public OpenRouteService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("").build();
     }
 
-    public Map<String, Object> getDataFromApi() {
-        String endpoint = "https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=51.4822656,-0.1933769&destinations=51.4994794,-0.1269979&key=YcUz8JvYZDWUOotIo8a3hfqsuMy9uuxCd2vw2ZZPPj3Leu9GtYgvh8Qa7NByjLGr"
-        Mono<Map> response = this.webClient.get()
-                .uri(endpoint)
-                .retrieve()
-                .bodyToMono(Map.class);
-        return response.block();
+    @SuppressWarnings("rawtypes")
+    public DistanceDTO getDataFromApi(City origin, City destination) {
+        String coordinatesOrigin = origin.getLatitude() + "," + origin.getLongitude();
+        String coordinatesDestination = destination.getLatitude() + "," + origin.getLongitude();
+        String endpoint = String.format("https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s", coordinatesOrigin, coordinatesDestination, API_KEY);
+        Mono<Map> response = this.webClient.get().uri(endpoint).retrieve().bodyToMono(Map.class);
+
+
+        String rawString =  response.block().get("rows").toString();
+        String regex = "value=(\\d+)";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(rawString);
+
+        double distance = 0;
+        double duration = 0;
+        int count = 0;
+
+        while (matcher.find()) {
+            if (count == 0) {
+                distance = Double.parseDouble(matcher.group(1));
+            } else if (count == 1) {
+                duration = Double.parseDouble(matcher.group(1));
+            }
+            count++;
+        }
+        return new DistanceDTO(origin, destination, distance, duration);
     }
 }

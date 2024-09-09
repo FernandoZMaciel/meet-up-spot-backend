@@ -1,5 +1,7 @@
 package com.meet_up_spot.controller;
 
+import com.meet_up_spot.domain.City;
+import com.meet_up_spot.domain.DistanceDTO;
 import com.meet_up_spot.services.OpenRouteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +21,7 @@ public class RouteController {
     }
 
     @GetMapping("/external-data")
-    public ResponseEntity<?> fetchData() {
-        Map<String, Object> data = apiService.getDataFromApi();
-        return ResponseEntity.ok(data);
+    public DistanceDTO fetchData() {
+        return apiService.getDataFromApi(new City("Blumenau", -26.9194,  -49.0661),  new City("São Paulo", -23.5505, -46.6333));
     }
 }
