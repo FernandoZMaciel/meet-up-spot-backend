@@ -3,7 +3,9 @@ package com.meet_up_spot.services;
 import com.meet_up_spot.domain.City;
 import com.meet_up_spot.domain.TravelDTO;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,18 +20,20 @@ import java.util.regex.Pattern;
 @Service
 public class OpenRouteService {
     private final WebClient webClient;
+    private final Environment environment;
 
 
-    public OpenRouteService(WebClient.Builder webClientBuilder) {
+    public OpenRouteService(WebClient.Builder webClientBuilder, Environment environment) {
         this.webClient = webClientBuilder.baseUrl("").build();
+        this.environment = environment;
     }
 
     @SuppressWarnings("rawtypes")
     public TravelDTO getDataFromApi(City origin, City destination) {
-        final String API_KEY = "YcUz8JvYZDWUOotIo8a3hfqsuMy9uuxCd2vw2ZZPPj3Leu9GtYgvh8Qa7NByjLGr";
         String coordinatesOrigin = origin.getLatitude() + "," + origin.getLongitude();
         String coordinatesDestination = destination.getLatitude() + "," + destination.getLongitude();
-        String endpoint = String.format("https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s", coordinatesOrigin, coordinatesDestination, API_KEY);
+        String routeKey = environment.getProperty("route.key");
+        String endpoint = String.format("https://api-v2.distancematrix.ai/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s", coordinatesOrigin, coordinatesDestination, routeKey);
         Mono<Map> response = this.webClient.get().uri(endpoint).retrieve().bodyToMono(Map.class);
 
 
@@ -56,8 +60,8 @@ public class OpenRouteService {
     }
 
     public City getLatAndLongByCityName(String cityName) {
-        final String API_KEY = "cb9a89ad51611c84a2ce1f903462c661";
-        String endpoint = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s,BR&limit=1&appid=%s", cityName, API_KEY);
+        String latKey = environment.getProperty("lat.key");
+        String endpoint = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s,BR&limit=1&appid=%s", cityName, latKey);
         Mono<List<Map<String, Object>>> response = this.webClient.get()
                 .uri(endpoint)
                 .retrieve()

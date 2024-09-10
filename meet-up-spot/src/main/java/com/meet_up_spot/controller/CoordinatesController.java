@@ -4,6 +4,7 @@ import com.meet_up_spot.domain.City;
 import com.meet_up_spot.domain.TotalTravelDTO;
 import com.meet_up_spot.domain.TravelDTO;
 import com.meet_up_spot.services.CoordinatesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +16,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/coordinates")
 public class CoordinatesController {
-    private final CoordinatesService coordinatesService = new CoordinatesService();
 
+    private final CoordinatesService coordinatesService;
+
+    @Autowired
+    public CoordinatesController (CoordinatesService coordinatesService){
+        this.coordinatesService = coordinatesService;
+    }
 
     @GetMapping("/meetup-spot")
     public TotalTravelDTO getTotalDistancesAndDuration (@RequestParam List<String> request){

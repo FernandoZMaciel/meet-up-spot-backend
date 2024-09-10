@@ -3,11 +3,20 @@ package com.meet_up_spot.services;
 import com.meet_up_spot.domain.City;
 import com.meet_up_spot.domain.TotalTravelDTO;
 import com.meet_up_spot.domain.TravelDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 
+@Service
 public class CoordinatesService {
+    private final OpenRouteService openRouteService;
+
+    @Autowired
+    public CoordinatesService(OpenRouteService openRouteService) {
+        this.openRouteService = openRouteService;
+    }
 
     public double[] getCenter(List<City> cities) {
         double coordinatesX = 0;
@@ -54,7 +63,6 @@ public class CoordinatesService {
 
     public List<TravelDTO> getAllDistancesAndDuration(List<Map.Entry<City, Double>> cities){
         List<TravelDTO> list = new ArrayList<>();
-        OpenRouteService openRouteService = new OpenRouteService(WebClient.builder());
         City meetSpot = cities.getFirst().getKey();
         for (Map.Entry<City, Double> city : cities) {
             if (!meetSpot.equals(city.getKey())) {
@@ -77,7 +85,6 @@ public class CoordinatesService {
 
     public List<City> cityListByNameList(List<String> list){
         List<City> cities = new ArrayList<>();
-        OpenRouteService openRouteService = new OpenRouteService(WebClient.builder());
         for (String cityName : list) {
             cities.add(openRouteService.getLatAndLongByCityName(cityName));
         }
