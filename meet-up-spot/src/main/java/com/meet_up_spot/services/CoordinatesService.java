@@ -75,4 +75,13 @@ public class CoordinatesService {
         return new TotalTravelDTO(travelDTOList, totalDistance, totalDuration);
     }
 
+    public List<City> cityListByNameList(List<String> list){
+        List<City> cities = new ArrayList<>();
+        OpenRouteService openRouteService = new OpenRouteService(WebClient.builder());
+        for (String cityName : list) {
+            cities.add(openRouteService.getLatAndLongByCityName(cityName));
+        }
+        return cities;
+    }
+
 }

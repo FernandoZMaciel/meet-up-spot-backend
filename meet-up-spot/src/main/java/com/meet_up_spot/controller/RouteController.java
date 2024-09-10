@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 public class RouteController {
@@ -16,9 +19,11 @@ public class RouteController {
     public RouteController(OpenRouteService apiService) {
         this.apiService = apiService;
     }
-
-    @GetMapping("/external-data")
     public TravelDTO fetchData() {
         return apiService.getDataFromApi(new City("Blumenau", -26.9194,  -49.0661),  new City("Porto Alegre", -30.0346, -51.2177));
+    }
+
+    public City getLatAndLongByCityName() {
+        return apiService.getLatAndLongByCityName("Blumenau");
     }
 }
