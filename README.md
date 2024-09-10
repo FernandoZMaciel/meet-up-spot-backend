@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MeetUpSpot API
 
 Esta API RESTful, desenvolvida em Java com Spring Boot, tem como objetivo encontrar o melhor ponto de encontro para um grupo de pessoas, considerando a menor distância e tempo de viagem entre os locais de origem de cada indivíduo.
@@ -70,3 +71,7 @@ json
 
 
 
+=======
+# meet-up-spot-backend
+An apllication that calcules the best spot for you and your friends to meetup
+>>>>>>> main
