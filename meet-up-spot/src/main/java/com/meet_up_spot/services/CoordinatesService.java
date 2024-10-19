@@ -63,7 +63,7 @@ public class CoordinatesService {
 
     public List<TravelDTO> getAllDistancesAndDuration(List<Map.Entry<City, Double>> cities){
         List<TravelDTO> list = new ArrayList<>();
-        City meetSpot = cities.getFirst().getKey();
+        City meetSpot = cities.get(0).getKey();
         for (Map.Entry<City, Double> city : cities) {
             if (!meetSpot.equals(city.getKey())) {
                 list.add(openRouteService.getDataFromApi(city.getKey(), meetSpot));
